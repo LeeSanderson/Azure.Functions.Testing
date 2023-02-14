@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace Azure.Functions.Testing.Cli.Common;
+namespace Azure.Functions.Testing;
 
 public static class CommandChecker
 {

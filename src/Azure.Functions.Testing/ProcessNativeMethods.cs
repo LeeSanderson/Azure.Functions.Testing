@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace Azure.Functions.Testing.Cli.NativeMethods;
+namespace Azure.Functions.Testing;
 
 internal class ProcessNativeMethods
 {
