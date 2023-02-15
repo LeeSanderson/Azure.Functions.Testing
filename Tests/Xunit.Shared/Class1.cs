@@ -1,10 +1,12 @@
+﻿using System;
+using System.IO;
 using System.Text;
 using Xunit.Abstractions;
 
-namespace Dotnet.Function.Demo.Tests;
+namespace Xunit.Shared;
 
 
-internal class TestOutputConsoleAdapter : TextWriter
+public class TestOutputConsoleAdapter : TextWriter
 {
     private readonly ITestOutputHelper _output;
 
@@ -27,16 +29,5 @@ internal class TestOutputConsoleAdapter : TextWriter
     public override void Write(char value)
     {
         throw new NotSupportedException("This text writer only supports WriteLine(string) and WriteLine(string, params object[]).");
-    }
-
-    public override void Write(string? message)
-    {
-        if (message?.Trim() == Environment.NewLine || string.IsNullOrEmpty(message))
-        {
-            // Skip new lines?
-            return;
-        }
-
-        _output.WriteLine(message);
     }
 }

@@ -1,6 +1,7 @@
 using Microsoft.VisualStudio.TestPlatform.TestHost;
 using System.Net;
 using Xunit.Abstractions;
+using Xunit.Shared;
 using Azure.Functions.Testing;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -21,7 +22,7 @@ namespace Dotnet.Function.Demo.Tests
         {
             using var factory = new FunctionApplicationFactory(
                 FunctionLocator.FromProject("Dotnet.Function.Demo"), "--verbose", "--debug");
-            factory.StartupDelay = TimeSpan.FromSeconds(5);
+            factory.StartupDelay = TimeSpan.FromSeconds(5); // Adjust depending on build time of Function project
             using var client = await factory.CreateClient();
 
             var response = await client.GetAsync(GetHelloUri);
