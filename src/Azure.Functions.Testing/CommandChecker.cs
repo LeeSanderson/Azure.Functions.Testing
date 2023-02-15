@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Azure.Functions.Testing;
 
-public static class CommandChecker
+internal static class CommandChecker
 {
     public static bool CommandValid(string fileName, string args)
         => CheckExitCode(fileName, args);
