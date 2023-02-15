@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace Azure.Functions.Testing;
 
-internal class Executable
+internal class Executable : IDisposable
 {
     private readonly string? _arguments;
     private readonly string _exeName;
@@ -38,6 +38,48 @@ internal class Executable
         TimeSpan? timeout = null,
         string? stdIn = null)
     {
+        Start(outputCallback, errorCallback, stdIn);
+        var exitCodeTask = Process!.CreateWaitForExitTask();
+        if (timeout == null)
+        {
+            return await exitCodeTask;
+        }
+
+        await Task.WhenAny(exitCodeTask, Task.Delay(timeout.Value));
+        if (exitCodeTask.IsCompleted)
+        {
+            return exitCodeTask.Result;
+        }
+
+        Process!.Kill();
+        throw new Exception("Process didn't exit within specified timeout");
+    }
+
+    public async Task<(bool, int)> TryGetExitCode(TimeSpan timeout)
+    {
+        if (Process == null)
+        {
+            throw new Exception("Process is not running. Call Start or RunAsync first");
+        }
+
+        var exitCode = -1;
+        var exitCodeTask = Process!.CreateWaitForExitTask();
+
+        await Task.WhenAny(exitCodeTask, Task.Delay(timeout));
+        var processCompleted = exitCodeTask.IsCompleted;
+        if (processCompleted)
+        {
+            exitCode = exitCodeTask.Result;
+        }
+
+        return (processCompleted, exitCode);
+    }
+
+    public void Start(
+        Action<string?>? outputCallback = null,
+        Action<string?>? errorCallback = null,
+        string? stdIn = null)
+    {
         if (StaticSettings.IsDebug)
         {
             Console.WriteLine($"> {Command}");
@@ -57,8 +99,6 @@ internal class Executable
                 WorkingDirectory = _workingDirectory ?? Environment.CurrentDirectory
             }
         };
-
-        var exitCodeTask = Process.CreateWaitForExitTask();
 
         if (_streamOutput)
         {
@@ -85,7 +125,7 @@ internal class Executable
 
             if (!string.IsNullOrEmpty(stdIn))
             {
-                await Process.StandardInput.WriteLineAsync(stdIn);
+                Process.StandardInput.WriteLine(stdIn);
                 Process.StandardInput.Close();
             }
         }
@@ -97,19 +137,20 @@ internal class Executable
             }
             throw;
         }
+    }
 
-        if (timeout == null)
+
+    public void Dispose()
+    {
+        try
         {
-            return await exitCodeTask;
+            Process?.Kill();
+        }
+        catch
+        {
+            // Ignore errors on kill/dispose
         }
 
-        await Task.WhenAny(exitCodeTask, Task.Delay(timeout.Value));
-        if (exitCodeTask.IsCompleted)
-        {
-            return exitCodeTask.Result;
-        }
-
-        Process.Kill();
-        throw new Exception("Process didn't exit within specified timeout");
+        Process?.Dispose();
     }
 }

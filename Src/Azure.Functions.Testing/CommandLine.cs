@@ -75,7 +75,7 @@ public static class CommandLine
                 }
             }
 
-            if (currentIndex < lastIndex && !IsSwitchArg(arg))
+            if (currentIndex < lastIndex && !IsSwitchArg(arg) && !IsSwitchArg(options[currentIndex + 1].RawKey))
             {
                 cmdArgs.Add(EndOfOptionsKey);
             }

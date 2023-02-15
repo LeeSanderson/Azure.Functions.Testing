@@ -46,7 +46,12 @@ namespace Azure.Functions.Testing.Tests
             NewParseTestCase(
                 "files a.txt b.txt -- another",
                 new Option("files", "files", "a.txt", "b.txt"),
-                new Option("another", "another"))
+                new Option("another", "another")),
+
+            NewParseTestCase(
+                "files a.txt b.txt --another",
+                new Option("files", "files", "a.txt", "b.txt"),
+                new Option("another", "--another"))
         };
 
         private static object[] NewParseTestCase(string args, params Option[] options) => new object[] {args, options};
