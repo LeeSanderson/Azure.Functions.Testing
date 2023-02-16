@@ -46,20 +46,17 @@ steps:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
-- script: dir /s
-  displayName: Display directory structure
-
 - task: CopyFiles@2
   condition: succeeded()
   inputs:
-    contents: 'Src\Azure.Functions.Testing\bin\$(buildConfiguration)\Azure.Functions.Testing.*.nupkg'
+    contents: 'Src\Azure.Functions.Testing\bin\$(buildConfiguration)\*.nupkg'
     targetFolder: '$(Build.ArtifactStagingDirectory)/nuget'
     flattenFolders: true
 
 - task: CopyFiles@2
   condition: succeeded()
   inputs:
-    contents: 'Src\Azure.Functions.Testing\bin\$(buildConfiguration)\Azure.Functions.Testing.*.snupkg'
+    contents: 'Src\Azure.Functions.Testing\bin\$(buildConfiguration)\*.snupkg'
     targetFolder: '$(Build.ArtifactStagingDirectory)/nuget'
     flattenFolders: true
 

@@ -8,7 +8,7 @@
     </PropertyGroup>
 
 	<PropertyGroup>
-		<PackageId>Azure.Functons.Testing</PackageId>
+		<PackageId>Azure.Functions.Testing</PackageId>
 		<Version>0.1.0</Version>
 		<Authors>Lee Sanderson</Authors>
 		<Company>SixSidedDice.com</Company>
