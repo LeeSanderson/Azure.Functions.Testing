@@ -1,0 +1,67 @@
+pool:
+  vmImage: 'windows-latest'
+
+pr:
+  autoCancel: true
+  branches:
+    include:
+      - "*"
+  drafts: false
+
+trigger:
+  batch: true
+  branches:
+    include:
+      - "*"
+
+variables:
+  - group: SharedVariables
+  - name: solution
+    value: '**/*.sln'
+  - name: buildPlatform
+    value: 'Any CPU'
+  - name: buildConfiguration
+    value: 'Release'
+
+steps:
+- task: NuGetToolInstaller@1
+      
+- task: NuGetCommand@2
+  inputs:
+    restoreSolution: '$(solution)'
+
+- task: VSBuild@1
+  condition: succeeded()
+  inputs:
+    solution: '$(solution)'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+
+- task: VSTest@2
+  condition: succeeded()
+  inputs:
+    testAssemblyVer2: |
+      **\bin\**\Azure.Function.Testing.Tests.dll
+    codeCoverageEnabled: True     
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+
+- task: CopyFiles@2
+  condition: succeeded()
+  inputs:
+    contents: 'Src\Azure.Function.Testing\bin\$(buildConfiguration)\Azure.Function.Testing.*.nupkg'
+    targetFolder: '$(Build.ArtifactStagingDirectory)/nuget'
+    flattenFolders: true
+
+- task: CopyFiles@2
+  condition: succeeded()
+  inputs:
+    contents: 'Src\Azure.Function.Testing\bin\$(buildConfiguration)\Azure.Function.Testing.*.snupkg'
+    targetFolder: '$(Build.ArtifactStagingDirectory)/nuget'
+    flattenFolders: true
+
+- task: PublishPipelineArtifact@1
+  condition: succeeded()
+  inputs:
+    targetPath: '$(Build.ArtifactStagingDirectory)/nuget'
+    artifactName: NuGetPackage
