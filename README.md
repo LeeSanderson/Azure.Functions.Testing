@@ -3,8 +3,8 @@
 # Azure.Functions.Testing
 
 ![Build Status](https://dev.azure.com/sixsideddice/SixSidedDice/_apis/build/status/AzureFunctionsTestingProd?branchName=main)
-![Nuget](https://img.shields.io/nuget/dt/Azure.Functions.Testing)
-![Nuget](https://img.shields.io/nuget/v/Azure.Functions.Testing)
+![Nuget](https://img.shields.io/nuget/dt/AzureFunctions.Testing)
+![Nuget](https://img.shields.io/nuget/v/AzureFunctions.Testing)
 
 
 [Azure.Functions.Testing](https://github.com/LeeSanderson/Azure.Functions.Testing) is an integration testing helper library for Azure Functions in the style of 
