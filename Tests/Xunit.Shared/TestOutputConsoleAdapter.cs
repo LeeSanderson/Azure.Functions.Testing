@@ -5,14 +5,13 @@ using Xunit.Abstractions;
 
 namespace Xunit.Shared;
 
-
 public class TestOutputConsoleAdapter : TextWriter
 {
     private readonly ITestOutputHelper _output;
 
     public TestOutputConsoleAdapter(ITestOutputHelper output)
     {
-        this._output = output;
+        _output = output;
     }
 
     public override Encoding Encoding => Encoding.UTF8;
