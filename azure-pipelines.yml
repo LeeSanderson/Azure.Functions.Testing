@@ -46,6 +46,9 @@ steps:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
+- script: dir /s
+  displayName: Display directory structure
+
 - task: CopyFiles@2
   condition: succeeded()
   inputs:
