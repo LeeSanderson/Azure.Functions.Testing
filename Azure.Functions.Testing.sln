@@ -11,13 +11,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dotnet", "Dotnet", "{F5E2E9
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dotnet.Function.Demo", "Tests\Dotnet\Dotnet.Function.Demo\Dotnet.Function.Demo.csproj", "{C1193CDE-5EDA-45D0-B290-A65F0A2619E0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Azure.Functions.Testing.Tests", "Tests\Azure.Functions.Testing.Tests\Azure.Functions.Testing.Tests.csproj", "{DDC39494-59A1-4C89-8CFA-496841BFCF88}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Azure.Functions.Testing.Tests", "Tests\Azure.Functions.Testing.Tests\Azure.Functions.Testing.Tests.csproj", "{DDC39494-59A1-4C89-8CFA-496841BFCF88}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dotnet.Function.Demo.Tests", "Tests\Dotnet\Dotnet.Function.Demo.Tests\Dotnet.Function.Demo.Tests.csproj", "{0544CDB8-3195-4BA9-85D7-62FD08103A60}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dotnet.Function.Demo.XunitCollectionFixtureTests", "Tests\Dotnet\Dotnet.Function.Demo.XunitCollectionFixtureTests\Dotnet.Function.Demo.XunitCollectionFixtureTests.csproj", "{4BE30534-66D1-42C6-939A-F364A7AAAE3C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xunit.Shared", "Tests\Xunit.Shared\Xunit.Shared.csproj", "{017D180E-C1F1-464A-8680-81C16F3CD450}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Pipelines", "Pipelines", "{5BE1273A-723D-4A35-98DA-9156F832FB23}"
+	ProjectSection(SolutionItems) = preProject
+		azure-pipelines.yml = azure-pipelines.yml
+		prod-azure-pipelines.yml = prod-azure-pipelines.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
