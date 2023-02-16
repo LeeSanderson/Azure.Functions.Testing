@@ -1,0 +1,29 @@
+pool:
+  vmImage: 'windows-latest'
+
+# Trigger production build (i.e. Nuget publish) after successful build pipeline run on main branch
+resources:
+  pipelines:
+    - pipeline: AzureFunctionsTestingBuild
+      source: "AzureFunctionsTestingBuild"
+      trigger:
+        enabled: true
+        branches:
+          include:
+            - main
+
+trigger: none
+pr: none
+
+variables:
+  - group: SharedVariables
+
+steps:
+- download: AzureFunctionsTestingBuild
+  artifact: NuGetPackage
+
+- task: UseDotNet@2 # ensure the .NET Core SDK is installed
+
+- script: dotnet -d nuget push "*.nupkg" --api-key $(NuGetApiKey) --source https://api.nuget.org/v3/index.json
+  workingDirectory: $(Pipeline.Workspace)\AzureFunctionsTestingBuild\NuGetPackage\
+  displayName: Publish to NuGet
