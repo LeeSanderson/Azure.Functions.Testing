@@ -41,7 +41,7 @@ steps:
   condition: succeeded()
   inputs:
     testAssemblyVer2: |
-      **\bin\**\Azure.Function.Testing.Tests.dll
+      **\bin\**\Azure.Functions.Testing.Tests.dll
     codeCoverageEnabled: True     
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
@@ -49,14 +49,14 @@ steps:
 - task: CopyFiles@2
   condition: succeeded()
   inputs:
-    contents: 'Src\Azure.Function.Testing\bin\$(buildConfiguration)\Azure.Function.Testing.*.nupkg'
+    contents: 'Src\Azure.Functions.Testing\bin\$(buildConfiguration)\Azure.Functions.Testing.*.nupkg'
     targetFolder: '$(Build.ArtifactStagingDirectory)/nuget'
     flattenFolders: true
 
 - task: CopyFiles@2
   condition: succeeded()
   inputs:
-    contents: 'Src\Azure.Function.Testing\bin\$(buildConfiguration)\Azure.Function.Testing.*.snupkg'
+    contents: 'Src\Azure.Functions.Testing\bin\$(buildConfiguration)\Azure.Functions.Testing.*.snupkg'
     targetFolder: '$(Build.ArtifactStagingDirectory)/nuget'
     flattenFolders: true
 
