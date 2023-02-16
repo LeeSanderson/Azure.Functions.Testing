@@ -60,6 +60,31 @@ response.StatusCode.Should().Be(HttpStatusCode.OK);
 
 ```
 
+## Example: Capturing output from Azure Function Core Tools 
+
+The `func` tools write output to the console. 
+It can be useful to capture this output during test runs. 
+However, some testing frameworks do not capture/output console messages by default.
+A [TestOutputConsoleAdapter](https://github.com/LeeSanderson/Azure.Functions.Testing/blob/main/Tests/Xunit.Shared/TestOutputConsoleAdapter.cs) can be used in xUnit to provide this
+kind of logging capability.
+
+This can then be configured via injection of the xUnit `ITestOutputHelper` and setting of the 
+output and error streams
+
+```csharp
+public HelloFeatureThatSharesFixture(ITestOutputHelper output)
+{
+    var adapter = new TestOutputConsoleAdapter(output)
+    Console.SetOut(adapter);
+    Console.SetError(adapter);
+}
+```
+
+To get more detailed ouput the `verbose` and `debug` flags can be passed.
+
+```csharp
+using var factory = new FunctionApplicationFactory(locator, "--verbose", "--debug")
+```
 
 ## Version History
 
