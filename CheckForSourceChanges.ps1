@@ -2,6 +2,13 @@
 write-host("Checking for changes in source code in $([Environment]::CurrentDirectory)")
 $srcDirectory = "$([Environment]::CurrentDirectory)\Src\Azure.Functions.Testing\"
 
+write-host("Checking git...")
+git remote show origin
+
+write-host("Last commit made by:")
+git log -1 --pretty=format:'%an'
+
+
 $sourceChanged = $false
 foreach ($_ in (git diff `@~..@ --name-only $srcDirectory)) 
 {
