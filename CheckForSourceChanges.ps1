@@ -2,7 +2,7 @@
 write-host("Checking for changes in source code in $([Environment]::CurrentDirectory)")
 
 $sourceChanged = $false
-foreach ($_ in (git diff HEAD^ --name-only .\Src\Azure.Functions.Testing\)) 
+foreach ($_ in (git diff `@~..@ --name-only .\Src\Azure.Functions.Testing\)) 
 {
 	$sourceChanged = $true
 	break
