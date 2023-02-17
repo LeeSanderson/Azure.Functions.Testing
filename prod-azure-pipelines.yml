@@ -22,8 +22,11 @@ steps:
 - download: AzureFunctionsTestingBuild
   artifact: NuGetPackage
 
+- pwsh: ./CheckForSourceChanges.ps1
+
 - task: UseDotNet@2 # ensure the .NET Core SDK is installed
 
 - script: dotnet -d nuget push "*.nupkg" --api-key $(NuGetApiKey) --source https://api.nuget.org/v3/index.json
   workingDirectory: $(Pipeline.Workspace)\AzureFunctionsTestingBuild\NuGetPackage\
   displayName: Publish to NuGet
+  condition: eq(variables.source-updated, 'true')

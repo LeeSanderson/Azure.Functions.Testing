@@ -22,6 +22,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Pipelines", "Pipelines", "{5BE1273A-723D-4A35-98DA-9156F832FB23}"
 	ProjectSection(SolutionItems) = preProject
 		azure-pipelines.yml = azure-pipelines.yml
+		CheckForSourceChanges.ps1 = CheckForSourceChanges.ps1
 		prod-azure-pipelines.yml = prod-azure-pipelines.yml
 	EndProjectSection
 EndProject
