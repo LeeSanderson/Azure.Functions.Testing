@@ -8,10 +8,10 @@ foreach ($_ in (git diff HEAD^ --name-only .\Src\Azure.Functions.Testing\))
 if ($sourceChanged)
 {
 	write-host("Source code change detected, new NuGet package will be build")
-	write-host("##vso[task.setvariable variable=source-updated]true")
+	write-host("##vso[task.setvariable variable=sourceupdated]true")
 }
 else 
 {
 	write-host("No source code change detected, NuGet package publish will be skipped")
-	write-host("##vso[task.setvariable variable=source-updated]false")
+	write-host("##vso[task.setvariable variable=sourceupdated]false")
 }

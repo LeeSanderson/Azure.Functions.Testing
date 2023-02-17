@@ -29,4 +29,4 @@ steps:
 - script: dotnet -d nuget push "*.nupkg" --api-key $(NuGetApiKey) --source https://api.nuget.org/v3/index.json
   workingDirectory: $(Pipeline.Workspace)\AzureFunctionsTestingBuild\NuGetPackage\
   displayName: Publish to NuGet
-  condition: eq(variables.source-updated, 'true')
+  condition: eq(variables.sourceupdated, 'true')
