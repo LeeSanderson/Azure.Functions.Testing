@@ -32,7 +32,7 @@ steps:
    git log -n 1
    $hashes = @(git log -n 2 --format='%h' --abbrev-commit)
    $previousCommitHash = $hashes[1]
-   write-host("Executing command: git diff --name-only $(previousCommitHash)")
+   write-host("Executing command: git diff --name-only $previousCommitHash")
    git diff --name-only $previousCommitHash
    write-host("End of command output")
 
