@@ -33,7 +33,7 @@ steps:
    $srcDirectory = "$([Environment]::CurrentDirectory)\Src\Azure.Functions.Testing\"
    $sourceChanged = $false
    $cmdOutput = @(git diff `@~..@ --name-only $srcDirectory)
-   foreach ($_ in @cmdOutput) 
+   foreach ($_ in $cmdOutput) 
    {
        $sourceChanged = $true
        break
