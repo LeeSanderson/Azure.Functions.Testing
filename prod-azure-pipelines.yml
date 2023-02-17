@@ -23,6 +23,7 @@ steps:
   artifact: NuGetPackage
 
 - pwsh: ./CheckForSourceChanges.ps1
+  workingDirectory: $(Build.SourcesDirectory)
 
 - task: UseDotNet@2 # ensure the .NET Core SDK is installed
 
