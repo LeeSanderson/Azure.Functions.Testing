@@ -30,11 +30,28 @@ steps:
    $baseBranch = [io.path]::GetFileNameWithoutExtension("$(Build.SourceBranch)")
    git switch $baseBranch
 
+   $srcDirectory = "$([Environment]::CurrentDirectory)\Src\Azure.Functions.Testing\"
+   $sourceChanged = $false
+   $cmdOutput = @(git diff `@~..@ --name-only $srcDirectory)
+   foreach ($_ in @cmdOutput) 
+   {
+       $sourceChanged = $true
+       break
+   }
+
+   if ($sourceChanged)
+   {
+        write-host("Source code change detected, new NuGet package will be build")
+        write-host("##vso[task.setvariable variable=sourceupdated]true")
+    }
+    else 
+    {
+        write-host("No source code change detected, NuGet package publish will be skipped")
+        write-host("##vso[task.setvariable variable=sourceupdated]false")
+    }
+
 - download: AzureFunctionsTestingBuild
   artifact: NuGetPackage
-
-- pwsh: ./CheckForSourceChanges.ps1
-  workingDirectory: $(Build.SourcesDirectory)
 
 - task: UseDotNet@2 # ensure the .NET Core SDK is installed
 
