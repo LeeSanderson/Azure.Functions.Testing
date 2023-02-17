@@ -24,8 +24,9 @@ steps:
   persistCredentials: true
 
 - script: |
+   echo "Switching to $(Build.SourceBranch)"
    git fetch --all
-   git switch $(basename $(Build.SourceBranch))
+   git switch $(Build.SourceBranch)
 
 - download: AzureFunctionsTestingBuild
   artifact: NuGetPackage
