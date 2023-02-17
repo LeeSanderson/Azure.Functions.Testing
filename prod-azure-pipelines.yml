@@ -23,10 +23,11 @@ steps:
   clean: true
   persistCredentials: true
 
-- script: |
+# Make sure we can are not in detached HEAD mode by switching to the source branch
+- pwsh: |
    echo "Switching to $(Build.SourceBranch)"
    git fetch --all
-   git switch $(Build.SourceBranch)
+   git switch  [io.path]::GetFileNameWithoutExtension("$(Build.SourceBranch)")
 
 - download: AzureFunctionsTestingBuild
   artifact: NuGetPackage
