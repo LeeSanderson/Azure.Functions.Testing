@@ -30,10 +30,13 @@ steps:
    $baseBranch = [io.path]::GetFileNameWithoutExtension("$(Build.SourceBranch)")
    git switch $baseBranch
    git log -n 1
-   git diff  --name-only `@~..@
+   $hashes = @(git log -n 2 --format='%h' --abbrev-commit)
+   $startHash = $hashes[0]
+   $endHash = $hashes[0]
+   git diff  --name-only $startHash..$endHash
 
    $sourceChanged = $false
-   $cmdOutput = @(git diff  --name-only `@~..@)
+   $cmdOutput = @(git diff  --name-only $startHash..$endHash)
    foreach ($line in $cmdOutput) 
    {
        if ($line -like "Src/*")
