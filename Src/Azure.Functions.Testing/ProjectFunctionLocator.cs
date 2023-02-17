@@ -1,4 +1,6 @@
-﻿namespace Azure.Functions.Testing;
+﻿using System.Runtime.InteropServices;
+
+namespace Azure.Functions.Testing;
 
 internal class ProjectFunctionLocator : IFunctionLocator
 {
@@ -56,10 +58,10 @@ internal class ProjectFunctionLocator : IFunctionLocator
             throw new DirectoryNotFoundException(rootFolderPath);
         }
 
-        var directory = new DirectoryInfo(rootFolderPath);
+        var rootDirectory = new DirectoryInfo(rootFolderPath);
 
-        directory = (directory.GetDirectories("*", SearchOption.AllDirectories))
-            .FirstOrDefault(folder => string.Equals(folder.Name, folderName, StringComparison.OrdinalIgnoreCase));
+        var directory = (rootDirectory.GetDirectories("*", SearchOption.AllDirectories))
+            .FirstOrDefault(folder => !IsInIgnoredFolder(rootDirectory, folder) && string.Equals(folder.Name, folderName, StringComparison.OrdinalIgnoreCase));
 
         if (directory == null)
         {
@@ -67,5 +69,20 @@ internal class ProjectFunctionLocator : IFunctionLocator
         }
 
         return directory.FullName;
+    }
+
+    private static bool IsInIgnoredFolder(DirectoryInfo rootDirectory, DirectoryInfo directory)
+    {
+        var parent = directory.Parent;
+        while (parent != null && parent.FullName != rootDirectory.FullName)
+        {
+            if (parent.Name.StartsWith("."))
+            {
+                return true;
+            }
+            parent = parent.Parent;
+        }
+
+        return false;
     }
 }

@@ -36,11 +36,13 @@ public sealed class FunctionApplicationFactory : IDisposable
 
     public TimeSpan StartupDelay { get; set; } = TimeSpan.FromSeconds(2);
 
+    public TimeSpan ShutdownDelay { get; set; } = TimeSpan.FromSeconds(1);
+
     private TimeSpan DefaultClientTimeout { get; set; } = TimeSpan.FromSeconds(100);
 
     public async Task<HttpClient> CreateClient()
     {
-        await EnsureStarted();
+        await Start();
         var protocol = _useHttps ? "https" : "http";
         var client = new HttpClient
         {
@@ -51,7 +53,7 @@ public sealed class FunctionApplicationFactory : IDisposable
         return client;
     }
 
-    private async Task EnsureStarted()
+    public async Task Start()
     {
         if (_funcExe != null)
         {
@@ -78,6 +80,24 @@ public sealed class FunctionApplicationFactory : IDisposable
             throw new FunctionApplicationFactoryException(
                 $"'func' failed to start (Exited prematurely with exit code {exitCode}). Check log for more details");
         }
+    }
+
+    public async Task Stop()
+    {
+        if (_funcExe == null)
+        {
+            return;
+        }
+
+        var (_, exitCode) = await _funcExe.TryGetExitCode(ShutdownDelay);
+        if (exitCode > 0)
+        {
+            throw new FunctionApplicationFactoryException(
+                $"'func' failed to stopped prematurely with exit code {exitCode}. Check log for more details");
+        }
+
+        _funcExe.Dispose();
+        _funcExe = null;
     }
 
     private int EnsurePortAvailable()

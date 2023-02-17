@@ -2,7 +2,7 @@
 
 namespace Dotnet.Function.Demo.XunitCollectionFixtureTests;
 
-public class HttpClientFixture : IDisposable
+public class HttpClientFixture : IDisposable, IAsyncLifetime
 {
     private readonly FunctionApplicationFactory _factory;
 
@@ -12,10 +12,6 @@ public class HttpClientFixture : IDisposable
         // testing and testing a deployed function (just need to create a HTTP client with a BaseAddress)
         _factory = new FunctionApplicationFactory(
             FunctionLocator.FromProject("Dotnet.Function.Demo"), "--verbose", "--debug");
-
-
-        // Set startup timeout. Adjust depending on build time of Function project;
-        _factory.StartupDelay = TimeSpan.FromSeconds(5); 
     }
 
     public async Task<HttpClient> CreateClient() => await _factory.CreateClient().ConfigureAwait(false);
@@ -23,6 +19,19 @@ public class HttpClientFixture : IDisposable
     public void Dispose()
     {
         _factory.Dispose();
+    }
+
+    public Task InitializeAsync()
+    {
+        // Set startup timeout. Adjust depending on build time of Function project;
+        _factory.StartupDelay = TimeSpan.FromSeconds(5);
+
+        return _factory.Start();
+    }
+
+    public Task DisposeAsync()
+    {
+        return _factory.Stop();
     }
 }
 

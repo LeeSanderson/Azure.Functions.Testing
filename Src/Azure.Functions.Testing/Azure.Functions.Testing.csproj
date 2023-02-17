@@ -9,7 +9,7 @@
 
 	<PropertyGroup>
 		<PackageId>AzureFunctions.Testing</PackageId>
-		<Version>0.1.0</Version>
+		<Version>0.1.1</Version>
 		<Authors>Lee Sanderson</Authors>
 		<Company>SixSidedDice.com</Company>
 		<Description>Integration testing helper library for Azure Functions in the style of WebApplicationFactory</Description>

@@ -90,4 +90,5 @@ using var factory = new FunctionApplicationFactory(locator, "--verbose", "--debu
 
 | Version | Major Changes |  
 | --- | --- | 
+| 0.1.1 | Expose Start and Stop methods to allow initialization |  
 | 0.1.0 | Initial version |  

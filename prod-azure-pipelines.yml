@@ -20,6 +20,12 @@ variables:
 
 steps:
 - checkout: self
+  clean: true
+  persistCredentials: true
+
+- script: |
+   git fetch --all
+   git switch $(basename $(Build.SourceBranch))
 
 - download: AzureFunctionsTestingBuild
   artifact: NuGetPackage
