@@ -29,14 +29,17 @@ steps:
    git fetch --all
    $baseBranch = [io.path]::GetFileNameWithoutExtension("$(Build.SourceBranch)")
    git switch $baseBranch
+   git log -n 1
 
-   $srcDirectory = "$([Environment]::CurrentDirectory)\Src\Azure.Functions.Testing\"
    $sourceChanged = $false
-   $cmdOutput = @(git diff `@~..@ --name-only $srcDirectory)
-   foreach ($_ in $cmdOutput) 
+   $cmdOutput = @(git diff  --name-only `@~..@)
+   foreach ($line in $cmdOutput) 
    {
-       $sourceChanged = $true
-       break
+       if ($line -like "Src/*")
+       {
+           $sourceChanged = $true
+           break
+       }
    }
 
    if ($sourceChanged)

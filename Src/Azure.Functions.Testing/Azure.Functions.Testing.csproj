@@ -13,7 +13,7 @@
 		<Authors>Lee Sanderson</Authors>
 		<Company>SixSidedDice.com</Company>
 		<Description>Integration testing helper library for Azure Functions in the style of WebApplicationFactory</Description>
-		<PackageTags>azure;function;func;testing</PackageTags>
+		<PackageTags>azure;function;func;testing;bdd</PackageTags>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageIcon>icon.png</PackageIcon>
 		<PackageReadmeFile>PackageReadme.md</PackageReadmeFile>
