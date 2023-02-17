@@ -26,11 +26,9 @@ steps:
 
 # Make sure we can are not in detached HEAD mode by switching to the source branch
 - pwsh: |
-   echo "Switching to $(Build.SourceBranch)"
-   git fetch --all
-   $baseBranch = [io.path]::GetFileNameWithoutExtension("$(Build.SourceBranch)")
-   git switch $baseBranch
    git log -n 2
+   write-host("")
+
    $hashes = @(git log -n 2 --format='%h' --abbrev-commit)
    if ($hashes.Length -lt 2) 
    {
