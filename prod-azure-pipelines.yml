@@ -27,7 +27,8 @@ steps:
 - pwsh: |
    echo "Switching to $(Build.SourceBranch)"
    git fetch --all
-   git switch  [io.path]::GetFileNameWithoutExtension("$(Build.SourceBranch)")
+   $baseBranch = [io.path]::GetFileNameWithoutExtension("$(Build.SourceBranch)")
+   git switch $baseBranch
 
 - download: AzureFunctionsTestingBuild
   artifact: NuGetPackage
