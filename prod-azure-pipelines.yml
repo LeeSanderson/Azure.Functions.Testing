@@ -30,6 +30,7 @@ steps:
    $baseBranch = [io.path]::GetFileNameWithoutExtension("$(Build.SourceBranch)")
    git switch $baseBranch
    git log -n 1
+   git diff  --name-only `@~..@
 
    $sourceChanged = $false
    $cmdOutput = @(git diff  --name-only `@~..@)
