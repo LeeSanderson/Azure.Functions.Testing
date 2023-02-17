@@ -31,12 +31,11 @@ steps:
    git switch $baseBranch
    git log -n 1
    $hashes = @(git log -n 2 --format='%h' --abbrev-commit)
-   $startHash = $hashes[0]
-   $endHash = $hashes[0]
-   git diff  --name-only $startHash..$endHash
+   $previousCommitHash = $hashes[1]
+   git diff  --name-only $previousCommitHash
 
    $sourceChanged = $false
-   $cmdOutput = @(git diff  --name-only $startHash..$endHash)
+   $cmdOutput = @(git diff  --name-only $previousCommitHash)
    foreach ($line in $cmdOutput) 
    {
        if ($line -like "Src/*")
