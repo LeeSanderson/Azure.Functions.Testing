@@ -22,6 +22,7 @@ steps:
 - checkout: self
   clean: true
   persistCredentials: true
+  fetchDepth: 2
 
 # Make sure we can are not in detached HEAD mode by switching to the source branch
 - pwsh: |
@@ -31,7 +32,7 @@ steps:
    git switch $baseBranch
    git log -n 2
    $hashes = @(git log -n 2 --format='%h' --abbrev-commit)
-   if ($hashes.Length < 2) 
+   if ($hashes.Length -lt 2) 
    {
        throw "Unable to get previous commit hash from git log"
    }
