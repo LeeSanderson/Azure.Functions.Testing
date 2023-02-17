@@ -34,22 +34,15 @@ steps:
    $hashes = @(git log -n 2 --format='%h' --abbrev-commit)
    if ($hashes.Length -lt 2) 
    {
-       throw "Unable to get previous commit hash from git log"
+       throw "Unable to get previous commit hash from git log. Make sure fetchDepth is 2 or more."
    }
-   $previousCommitHash = $hashes[1]
-   write-host("Executing command: git diff --name-only $previousCommitHash")
-   git diff --name-only $previousCommitHash
-   write-host("End of command output")
 
    $sourceChanged = $false
-   $cmdOutput = @(git diff  --name-only $previousCommitHash)
-   foreach ($line in $cmdOutput) 
+   $cmdOutput = 
+   foreach ($_ in @(git diff  --name-only `@~ `@ ./Src)) 
    {
-       if ($line -like "Src/*")
-       {
-           $sourceChanged = $true
-           break
-       }
+       $sourceChanged = $true
+       break
    }
 
    if ($sourceChanged)
