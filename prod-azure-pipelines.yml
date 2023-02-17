@@ -19,6 +19,8 @@ variables:
   - group: SharedVariables
 
 steps:
+- checkout: self
+
 - download: AzureFunctionsTestingBuild
   artifact: NuGetPackage
 
