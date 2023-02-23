@@ -37,6 +37,9 @@ steps:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
+
+- task: FuncToolsInstaller@0
+
 - task: VSTest@2
   condition: succeeded()
   inputs:
