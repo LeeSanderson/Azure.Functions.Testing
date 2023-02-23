@@ -41,7 +41,7 @@ steps:
   condition: succeeded()
   inputs:
     testAssemblyVer2: |
-      **\bin\**\Azure.Functions.Testing.Tests.dll
+      **\bin\**\*.Tests.dll
     codeCoverageEnabled: True     
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
