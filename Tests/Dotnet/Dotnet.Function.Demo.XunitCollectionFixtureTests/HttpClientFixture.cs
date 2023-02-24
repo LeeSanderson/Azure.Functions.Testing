@@ -11,7 +11,7 @@ public class HttpClientFixture : IDisposable, IAsyncLifetime
         // Create factory for local testing. Could use environment variables to switch between local
         // testing and testing a deployed function (just need to create a HTTP client with a BaseAddress)
         _factory = new FunctionApplicationFactory(
-            FunctionLocator.FromProject("Dotnet.Function.Demo"), "--verbose", "--debug");
+            FunctionLocator.FromProject("Dotnet.Function.Demo"), "--verbose", "--debug", "--csharp");
     }
 
     public async Task<HttpClient> CreateClient() => await _factory.CreateClient().ConfigureAwait(false);

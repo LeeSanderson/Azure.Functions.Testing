@@ -20,8 +20,10 @@ namespace Dotnet.Function.Demo.Tests
         [Fact]
         public async Task HelloIsOkay()
         {
+            // using var factory = new FunctionApplicationFactory(
+            //     FunctionLocator.FromProject("Dotnet.Function.Demo"), "--verbose", "--debug", "--no-build", "--prefix", "bin/Debug/net7.0");
             using var factory = new FunctionApplicationFactory(
-                FunctionLocator.FromProject("Dotnet.Function.Demo"), "--verbose", "--debug");
+                FunctionLocator.FromProject("Dotnet.Function.Demo"), "--verbose", "--debug", "--csharp");
             factory.StartupDelay = TimeSpan.FromSeconds(5); // Adjust depending on build time of Function project
             using var client = await factory.CreateClient();
 

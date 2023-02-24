@@ -86,9 +86,20 @@ To get more detailed ouput the `verbose` and `debug` flags can be passed.
 using var factory = new FunctionApplicationFactory(locator, "--verbose", "--debug")
 ```
 
+If you are not using a `local.settings.json` file or you are running the tests in a CI pipeline you may need to pass a language
+argument to the `FunctionApplicationFactory` so the function runtime can determine the project. 
+
+```csharp
+using var factory = new FunctionApplicationFactory(locator, "--verbose", "--debug", "--csharp")
+```
+
+If you are using Azure DevOps pipelines for your CI pipelines the [FuncToolsInstaller@0](https://learn.microsoft.com/en-us/azure/devops/pipelines/tasks/reference/func-tools-installer-v0?view=azure-pipelines)
+task can be used to install dependencies.
+
 ## Version History
 
 | Version | Major Changes |  
 | --- | --- | 
+| 0.1.2 | Added support for running in CI pipelines as well as locally |  
 | 0.1.1 | Expose Start and Stop methods to allow initialization |  
 | 0.1.0 | Initial version |  
