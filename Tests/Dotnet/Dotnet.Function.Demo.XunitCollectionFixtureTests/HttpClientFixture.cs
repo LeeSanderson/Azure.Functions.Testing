@@ -24,7 +24,7 @@ public class HttpClientFixture : IDisposable, IAsyncLifetime
     public Task InitializeAsync()
     {
         // Set startup timeout. Adjust depending on build time of Function project;
-        _factory.StartupDelay = TimeSpan.FromSeconds(5);
+        _factory.StartupDelay = TimeSpan.FromSeconds(20);
 
         return _factory.Start();
     }
