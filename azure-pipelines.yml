@@ -16,38 +16,33 @@ trigger:
 
 variables:
   - group: SharedVariables
-  - name: solution
-    value: '**/*.sln'
-  - name: buildPlatform
-    value: 'Any CPU'
   - name: buildConfiguration
     value: 'Release'
-
-steps:
-- task: NuGetToolInstaller@1
+  - name: dotnetVersion
+    value: '7.0.0'
       
-- task: NuGetCommand@2
+- task: UseDotNet@2
+  displayName: 'Use .NET Core $(dotnetVersion)'
   inputs:
-    restoreSolution: '$(solution)'
+    packageType: sdk
+    version: $(dotnetVersion)
+    installationPath: $(Agent.ToolsDirectory)/dotnet
 
-- task: VSBuild@1
-  condition: succeeded()
+- task: DotNetCoreCLI@2
+  displayName: 'Build'
   inputs:
-    solution: '$(solution)'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
-
+    command: 'build'
+    arguments: '--configuration $(buildConfiguration)'
+    projects: '**/*.csproj'
 
 - task: FuncToolsInstaller@0
 
-- task: VSTest@2
-  condition: succeeded()
+- task: DotNetCoreCLI@2
+  displayName: Test
   inputs:
-    testAssemblyVer2: |
-      **\bin\**\*.Tests.dll
-    codeCoverageEnabled: True     
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    command: "test"
+    projects: '**/*[Tt]ests*.csproj'
+    arguments: '--configuration $(buildConfiguration) --logger trx --collect "XPlat Code Coverage"'
 
 - task: CopyFiles@2
   condition: succeeded()

@@ -38,7 +38,9 @@ public sealed class FunctionApplicationFactory : IDisposable
 
     public TimeSpan ShutdownDelay { get; set; } = TimeSpan.FromSeconds(1);
 
-    private TimeSpan DefaultClientTimeout { get; set; } = TimeSpan.FromSeconds(100);
+    public TimeSpan DefaultClientTimeout { get; set; } = TimeSpan.FromSeconds(100);
+
+    public string? FuncExecutablePath { get; set; }
 
     public async Task<HttpClient> CreateClient()
     {
@@ -60,16 +62,11 @@ public sealed class FunctionApplicationFactory : IDisposable
             return;
         }
 
-        if (!CommandChecker.CommandExists("func"))
-        {
-            throw new FunctionApplicationFactoryException(
-                "Unable to find 'func'. Make sure Azure Function core tools are installed. " + 
-                "See: https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local");
-        }
+        var funcExecutableName = GetFuncExecutableName();
 
         var args = ArgsToArgString(CommandLine.ReverseParse(_options.ToArray()));
-        Log($"Executing 'func' with arguments: {args}, in working directory: {_startupDirectory}");
-        _funcExe = new Executable("func", args, workingDirectory: _startupDirectory);
+        Log($"Executing '{funcExecutableName}' with arguments: {args}, in working directory: {_startupDirectory}");
+        _funcExe = new Executable(funcExecutableName, args, workingDirectory: _startupDirectory);
         _funcExe.Start(
             o => Console.Out.WriteLine(o), 
             e => Console.Error.WriteLine(e));
@@ -80,6 +77,31 @@ public sealed class FunctionApplicationFactory : IDisposable
             throw new FunctionApplicationFactoryException(
                 $"'func' failed to start (Exited prematurely with exit code {exitCode}). Check log for more details");
         }
+    }
+
+    private string GetFuncExecutableName()
+    {
+        if (!string.IsNullOrEmpty(FuncExecutablePath))
+        {
+            if (!File.Exists(FuncExecutablePath))
+            {
+                throw new FunctionApplicationFactoryException(
+                    $"Unable to find '{FuncExecutablePath}'. Make sure Azure Function core tools are installed. " +
+                    "See: https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local");
+
+            }
+
+            return FuncExecutablePath!;
+        }
+
+        if (!CommandChecker.CommandExists("func"))
+        {
+            throw new FunctionApplicationFactoryException(
+                "Unable to find 'func'. Make sure Azure Function core tools are installed. " +
+                "See: https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local");
+        }
+
+        return "func";
     }
 
     public async Task Stop()
