@@ -19,7 +19,7 @@ variables:
   - name: buildConfiguration
     value: 'Release'
   - name: dotnetVersion
-    value: '7.0.0'
+    value: '7.0.x'
 
 steps:
   - task: UseDotNet@2
