@@ -20,46 +20,47 @@ variables:
     value: 'Release'
   - name: dotnetVersion
     value: '7.0.0'
-      
-- task: UseDotNet@2
-  displayName: 'Use .NET Core $(dotnetVersion)'
-  inputs:
-    packageType: sdk
-    version: $(dotnetVersion)
-    installationPath: $(Agent.ToolsDirectory)/dotnet
 
-- task: DotNetCoreCLI@2
-  displayName: 'Build'
-  inputs:
-    command: 'build'
-    arguments: '--configuration $(buildConfiguration)'
-    projects: '**/*.csproj'
+steps:
+  - task: UseDotNet@2
+    displayName: 'Use .NET Core $(dotnetVersion)'
+    inputs:
+      packageType: sdk
+      version: $(dotnetVersion)
+      installationPath: $(Agent.ToolsDirectory)/dotnet
+    
+  - task: DotNetCoreCLI@2
+    displayName: 'Build'
+    inputs:
+      command: 'build'
+      arguments: '--configuration $(buildConfiguration)'
+      projects: '**/*.csproj'
 
-- task: FuncToolsInstaller@0
+  - task: FuncToolsInstaller@0
 
-- task: DotNetCoreCLI@2
-  displayName: Test
-  inputs:
-    command: "test"
-    projects: '**/*[Tt]ests*.csproj'
-    arguments: '--configuration $(buildConfiguration) --logger trx --collect "XPlat Code Coverage"'
+  - task: DotNetCoreCLI@2
+    displayName: Test
+    inputs:
+      command: "test"
+      projects: '**/*[Tt]ests*.csproj'
+      arguments: '--configuration $(buildConfiguration) --logger trx --collect "XPlat Code Coverage"'
 
-- task: CopyFiles@2
-  condition: succeeded()
-  inputs:
-    contents: 'Src\Azure.Functions.Testing\bin\$(buildConfiguration)\*.nupkg'
-    targetFolder: '$(Build.ArtifactStagingDirectory)/nuget'
-    flattenFolders: true
+  - task: CopyFiles@2
+    condition: succeeded()
+    inputs:
+      contents: 'Src\Azure.Functions.Testing\bin\$(buildConfiguration)\*.nupkg'
+      targetFolder: '$(Build.ArtifactStagingDirectory)/nuget'
+      flattenFolders: true
 
-- task: CopyFiles@2
-  condition: succeeded()
-  inputs:
-    contents: 'Src\Azure.Functions.Testing\bin\$(buildConfiguration)\*.snupkg'
-    targetFolder: '$(Build.ArtifactStagingDirectory)/nuget'
-    flattenFolders: true
+  - task: CopyFiles@2
+    condition: succeeded()
+    inputs:
+      contents: 'Src\Azure.Functions.Testing\bin\$(buildConfiguration)\*.snupkg'
+      targetFolder: '$(Build.ArtifactStagingDirectory)/nuget'
+      flattenFolders: true
 
-- task: PublishPipelineArtifact@1
-  condition: succeeded()
-  inputs:
-    targetPath: '$(Build.ArtifactStagingDirectory)/nuget'
-    artifactName: NuGetPackage
+  - task: PublishPipelineArtifact@1
+    condition: succeeded()
+    inputs:
+      targetPath: '$(Build.ArtifactStagingDirectory)/nuget'
+      artifactName: NuGetPackage
