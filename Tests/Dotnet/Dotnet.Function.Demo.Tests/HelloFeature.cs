@@ -20,10 +20,7 @@ namespace Dotnet.Function.Demo.Tests
         [Fact]
         public async Task HelloIsOkay()
         {
-            // using var factory = new FunctionApplicationFactory(
-            //     FunctionLocator.FromProject("Dotnet.Function.Demo"), "--verbose", "--debug", "--no-build", "--prefix", "bin/Debug/net7.0");
-            using var factory = new FunctionApplicationFactory(
-                FunctionLocator.FromProject("Dotnet.Function.Demo"), "--verbose", "--debug", "--csharp");
+            using var factory = CreateFunctionApplicationFactory();
             factory.StartupDelay = TimeSpan.FromSeconds(20); // Adjust depending on build time of Function project
             using var client = await factory.CreateClient();
 
@@ -39,5 +36,22 @@ namespace Dotnet.Function.Demo.Tests
 
             factory.Invoking(f => f.CreateClient()).Should().Throw<InvalidOperationException>();
         }
+
+        [Fact]
+        public async Task HelloIsOkayWhenWaitingForHealthCheckToStart()
+        {
+            using var factory = CreateFunctionApplicationFactory();
+            factory.StartupDelay = TimeSpan.FromSeconds(20); // Adjust depending on build time of Function project
+            factory.HealthCheckEndpoint = GetHelloUri;
+
+            using var client = await factory.CreateClient();
+
+            var response = await client.GetAsync(GetHelloUri);
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+        }
+
+        private static FunctionApplicationFactory CreateFunctionApplicationFactory() =>
+            new(FunctionLocator.FromProject("Dotnet.Function.Demo"), "--verbose", "--debug", "--csharp");
     }
 }

@@ -1,3 +1,6 @@
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -13,5 +16,14 @@ namespace Dotnet.Function.Demo
         {
             return new OkObjectResult("Hello");
         }
+
+        [FunctionName("SlowHello")]
+        public static async Task<IActionResult> SlowHelloRun(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req)
+        {
+            await Task.Delay(TimeSpan.FromSeconds(30));
+            return new OkObjectResult("Hello");
+        }
+
     }
 }
