@@ -21,7 +21,19 @@ namespace Dotnet.Function.Demo.Tests
         public async Task HelloIsOkay()
         {
             using var factory = CreateFunctionApplicationFactory();
-            factory.StartupDelay = TimeSpan.FromSeconds(20); // Adjust depending on build time of Function project
+
+            // Delay to wait before function is considered up and running. 
+            // Can be adjusted depending on build time of Function project
+            // Can be augmented by HealthCheckEndpoint if one is available
+            factory.StartupDelay = TimeSpan.FromSeconds(20);
+
+            // Default timeout can be adjusted - defaults to 100 seconds
+            factory.DefaultClientTimeout = TimeSpan.FromSeconds(20);
+
+            // Shutdown delay allows time for func process to stop - defaults to 1 second
+            // but can be increased if required
+            factory.ShutdownDelay = TimeSpan.FromSeconds(2);
+
             using var client = await factory.CreateClient();
 
             var response = await client.GetAsync(GetHelloUri);
@@ -41,7 +53,12 @@ namespace Dotnet.Function.Demo.Tests
         public async Task HelloIsOkayWhenWaitingForHealthCheckToStart()
         {
             using var factory = CreateFunctionApplicationFactory();
-            factory.StartupDelay = TimeSpan.FromSeconds(20); // Adjust depending on build time of Function project
+
+            // The combination of StartupDelay and HealthCheckEndpoint work as follows during startup:
+            // 1. HealthCheckEndpoint is periodically polled, and function is considered started if endpoint returns a success response.
+            // 2. If the StartupDelay is exceeded the function is assumed to have started (even if the health check has not succeeded)
+            // Adjust depending on build time of Function project
+            factory.StartupDelay = TimeSpan.FromSeconds(20); 
             factory.HealthCheckEndpoint = GetHelloUri;
 
             using var client = await factory.CreateClient();

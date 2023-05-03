@@ -101,7 +101,7 @@ public sealed class FunctionApplicationFactory : IDisposable
         Task? healthCheckStartupTask = null;
         if (!string.IsNullOrEmpty(HealthCheckEndpoint))
         {
-            healthCheckStartupTask = Task.Run(() => WaitForHealthCheck(cancellationTokenSource.Token), cancellationTokenSource.Token);
+            healthCheckStartupTask = WaitForHealthCheck(cancellationTokenSource.Token);
             taskList[2] = healthCheckStartupTask;
         }
 

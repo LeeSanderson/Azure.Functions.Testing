@@ -22,5 +22,19 @@ namespace Azure.Functions.Testing.Tests
 
             await factory.Invoking(f => f.Start()).Should().ThrowAsync<FunctionApplicationFactoryException>();
         }
+
+        [Fact]
+        public async Task FailToStartUpIfFunctionPathDoesNotContainFuncExecutable()
+        {
+            using var factory = new FunctionApplicationFactory(
+                FunctionLocator.FromProject("XUnit.Shared"), "--verbose", "--debug");
+            factory.FuncExecutablePath = "../func.exe";
+
+            await factory
+                .Invoking(f => f.Start())
+                .Should()
+                .ThrowAsync<FunctionApplicationFactoryException>();
+        }
+
     }
 }
