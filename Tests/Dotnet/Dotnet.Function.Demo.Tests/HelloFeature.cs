@@ -57,7 +57,6 @@ namespace Dotnet.Function.Demo.Tests
             // The combination of StartupDelay and HealthCheckEndpoint work as follows during startup:
             // 1. HealthCheckEndpoint is periodically polled, and function is considered started if endpoint returns a success response.
             // 2. If the StartupDelay is exceeded the function is assumed to have started (even if the health check has not succeeded)
-            // Adjust depending on build time of Function project
             factory.StartupDelay = TimeSpan.FromSeconds(20); 
             factory.HealthCheckEndpoint = GetHelloUri;
 

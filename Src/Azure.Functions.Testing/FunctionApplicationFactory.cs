@@ -211,6 +211,7 @@ public sealed class FunctionApplicationFactory : IDisposable
             return;
         }
 
+        // Check the function is still running and hasn't stopped prematurely
         var (_, exitCode) = await _funcExe.TryGetExitCode(ShutdownDelay);
         if (exitCode > 0)
         {
