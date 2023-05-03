@@ -1,4 +1,6 @@
-﻿namespace Azure.Functions.Testing;
+﻿using System.Net.Sockets;
+
+namespace Azure.Functions.Testing;
 
 public sealed class FunctionApplicationFactory : IDisposable
 {
@@ -34,7 +36,16 @@ public sealed class FunctionApplicationFactory : IDisposable
         _funcExe = null;
     }
 
+    /// <summary>
+    /// Gets or sets the start up delay. If the Function does not start before this delay an exception will be thrown.
+    /// </summary>
     public TimeSpan StartupDelay { get; set; } = TimeSpan.FromSeconds(2);
+
+    /// <summary>
+    /// Gets or sets the health-check endpoint.
+    /// If not null then the endpoint will be periodically polled on start up to make sure the Function is running.
+    /// </summary>
+    public string? HealthCheckEndpoint { get; set; }
 
     public TimeSpan ShutdownDelay { get; set; } = TimeSpan.FromSeconds(1);
 
@@ -45,6 +56,11 @@ public sealed class FunctionApplicationFactory : IDisposable
     public async Task<HttpClient> CreateClient()
     {
         await Start();
+        return InternalCreateClient();
+    }
+
+    private HttpClient InternalCreateClient()
+    {
         var protocol = _useHttps ? "https" : "http";
         var client = new HttpClient
         {
@@ -71,11 +87,95 @@ public sealed class FunctionApplicationFactory : IDisposable
             o => Console.Out.WriteLine(o), 
             e => Console.Error.WriteLine(e));
 
-        var (exited, exitCode) = await _funcExe.TryGetExitCode(StartupDelay);
-        if (exited)
+        await TryStartFunction();
+    }
+
+    private async Task TryStartFunction()
+    {
+        var taskList = new Task[string.IsNullOrEmpty(HealthCheckEndpoint) ? 2 : 3];
+        var exitCodeTask = _funcExe!.Process!.CreateWaitForExitTask();
+        var cancellationTokenSource = new CancellationTokenSource();
+        taskList[0] = exitCodeTask;
+        var startupDelayTask = Task.Delay(StartupDelay, cancellationTokenSource.Token);
+        taskList[1] = startupDelayTask;
+        Task? healthCheckStartupTask = null;
+        if (!string.IsNullOrEmpty(HealthCheckEndpoint))
         {
+            healthCheckStartupTask = WaitForHealthCheck(cancellationTokenSource.Token);
+            taskList[2] = healthCheckStartupTask;
+        }
+
+        await Task.WhenAny(taskList);
+        var processCompleted = exitCodeTask.IsCompleted;
+        if (processCompleted)
+        {
+            var exitCode = exitCodeTask.Result;
             throw new FunctionApplicationFactoryException(
                 $"'func' failed to start (Exited prematurely with exit code {exitCode}). Check log for more details");
+        }
+
+        if (healthCheckStartupTask is {IsCompleted: true, IsFaulted: false})
+        {
+            Log($"Health check endpoint '{HealthCheckEndpoint}' indicated function has started");
+        }
+
+        cancellationTokenSource.Cancel();
+    }
+
+    private async Task WaitForHealthCheck(CancellationToken cancellationToken)
+    {
+        Log("Waiting for health endpoint to indicate function has started...");
+        var healthCheckClient = InternalCreateClient();
+        healthCheckClient.Timeout = TimeSpan.FromSeconds(5);
+
+        var retryCount = 0;
+        while (true)
+        {
+            try
+            {
+                var response = await healthCheckClient.GetAsync(HealthCheckEndpoint, cancellationToken);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    Log($"Health endpoint return {response.StatusCode}. Retrying...");
+                    await Task.Delay(1000, cancellationToken);
+                    retryCount++;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            catch (TaskCanceledException)
+            {
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    // Externally requested cancellation.
+                    break;
+                }
+
+                // Probably healthCheckClient.Timeout cancellation.
+                Log("Health endpoint timeout. Retrying...");
+                retryCount++;
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException is SocketException {SocketErrorCode: SocketError.ConnectionRefused})
+                {
+                    Log("Health endpoint return ConnectionRefused. Retrying...");
+                    retryCount++;
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            if (retryCount > 10)
+            {
+                throw new FunctionApplicationFactoryException(
+                    $"'func' health endpoint failed to return a success code 10 times. Check log for more details");
+            }
         }
     }
 
@@ -111,6 +211,7 @@ public sealed class FunctionApplicationFactory : IDisposable
             return;
         }
 
+        // Check the function is still running and hasn't stopped prematurely
         var (_, exitCode) = await _funcExe.TryGetExitCode(ShutdownDelay);
         if (exitCode > 0)
         {
@@ -164,6 +265,6 @@ public sealed class FunctionApplicationFactory : IDisposable
     {
         if (args.Length == 0) return null;
 
-        return string.Join(" ", args.Select(arg => arg.Any(Char.IsWhiteSpace) ? "\"" + arg + "\"" : arg ));
+        return string.Join(" ", args.Select(arg => arg.Any(char.IsWhiteSpace) ? "\"" + arg + "\"" : arg ));
     }
 }
