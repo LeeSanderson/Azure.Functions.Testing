@@ -101,7 +101,7 @@ public sealed class FunctionApplicationFactory : IDisposable
         Task? healthCheckStartupTask = null;
         if (!string.IsNullOrEmpty(HealthCheckEndpoint))
         {
-            healthCheckStartupTask = WaitForHealthCheck(cancellationTokenSource.Token);
+            healthCheckStartupTask = Task.Run(() => WaitForHealthCheck(cancellationTokenSource.Token), cancellationTokenSource.Token);
             taskList[2] = healthCheckStartupTask;
         }
 
@@ -163,6 +163,7 @@ public sealed class FunctionApplicationFactory : IDisposable
                 if (ex.InnerException is SocketException {SocketErrorCode: SocketError.ConnectionRefused})
                 {
                     Log("Health endpoint return ConnectionRefused. Retrying...");
+                    await Task.Delay(1000, cancellationToken);
                     retryCount++;
                 }
                 else

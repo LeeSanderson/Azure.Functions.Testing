@@ -18,7 +18,7 @@ public class TestOutputConsoleAdapter : TextWriter
 
     public override void WriteLine(string? message)
     {
-        _output.WriteLine(message);
+        _output.WriteLine(message ?? string.Empty);
     }
     public override void WriteLine(string format, params object?[] args)
     {

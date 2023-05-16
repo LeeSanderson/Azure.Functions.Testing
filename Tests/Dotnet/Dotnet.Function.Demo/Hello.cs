@@ -24,6 +24,5 @@ namespace Dotnet.Function.Demo
             await Task.Delay(TimeSpan.FromSeconds(30));
             return new OkObjectResult("Hello");
         }
-
     }
 }

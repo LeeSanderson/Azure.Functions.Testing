@@ -1,5 +1,7 @@
 ﻿using Azure.Functions.Testing;
 
+[assembly: CollectionBehavior(DisableTestParallelization = true)]
+
 namespace Dotnet.Function.Demo.XunitCollectionFixtureTests;
 
 public class HttpClientFixture : IDisposable, IAsyncLifetime
