@@ -39,7 +39,7 @@ public sealed class FunctionApplicationFactory : IDisposable
     /// <summary>
     /// Gets or sets the start up delay. If the Function does not start before this delay an exception will be thrown.
     /// </summary>
-    public TimeSpan StartupDelay { get; set; } = TimeSpan.FromSeconds(2);
+    public TimeSpan StartupDelay { get; set; } = TimeSpan.FromSeconds(20);
 
     /// <summary>
     /// Gets or sets the health-check endpoint.
