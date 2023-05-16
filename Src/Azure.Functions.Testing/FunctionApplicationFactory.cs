@@ -163,7 +163,7 @@ public sealed class FunctionApplicationFactory : IDisposable
                 if (ex.InnerException is SocketException {SocketErrorCode: SocketError.ConnectionRefused})
                 {
                     Log("Health endpoint return ConnectionRefused. Retrying...");
-                    await Task.Delay(1000, cancellationToken);
+                    await Task.Delay(5000, cancellationToken);
                     retryCount++;
                 }
                 else
