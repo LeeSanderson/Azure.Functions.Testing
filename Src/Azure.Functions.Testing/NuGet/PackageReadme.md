@@ -100,6 +100,7 @@ task can be used to install dependencies.
 
 | Version | Major Changes |  
 | --- | --- | 
+| 0.1.4 | Fixed bug when using health check and function is not receiving requests  |  
 | 0.1.3 | Added support for health check on startup  |  
 | 0.1.2 | Added support for running in CI pipelines as well as locally |  
 | 0.1.1 | Expose Start and Stop methods to allow initialization |  

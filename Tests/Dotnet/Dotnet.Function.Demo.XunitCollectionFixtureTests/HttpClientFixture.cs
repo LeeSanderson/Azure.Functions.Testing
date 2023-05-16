@@ -4,6 +4,7 @@
 
 namespace Dotnet.Function.Demo.XunitCollectionFixtureTests;
 
+// ReSharper disable once ClassNeverInstantiated.Global
 public class HttpClientFixture : IDisposable, IAsyncLifetime
 {
     private readonly FunctionApplicationFactory _factory;
