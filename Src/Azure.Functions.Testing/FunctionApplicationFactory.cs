@@ -1,4 +1,5 @@
-﻿using System.Net.Sockets;
+﻿using System.Diagnostics;
+using System.Net.Sockets;
 
 namespace Azure.Functions.Testing;
 
@@ -57,6 +58,21 @@ public sealed class FunctionApplicationFactory : IDisposable
     {
         await Start();
         return InternalCreateClient();
+    }
+
+    public void CleanupRunningFunctions()
+    {
+        foreach (var process in Process.GetProcessesByName("func"))
+        {
+            try
+            {
+                process.KillProcessTree();
+            }
+            catch
+            {
+                // Ignore
+            }
+        }
     }
 
     private HttpClient InternalCreateClient()
