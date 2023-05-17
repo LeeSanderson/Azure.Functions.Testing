@@ -48,7 +48,7 @@ internal static class ProcessExtensions
             return process.GetParentProcessLinux();
         }
 
-        if (!process.TryGetProcessHandle(out IntPtr processHandle))
+        if (!process.TryGetProcessHandle(out var processHandle))
         {
             return null;
         }
@@ -83,14 +83,16 @@ internal static class ProcessExtensions
         try
         {
             var procPath = "/proc/" + process.Id + "/stat";
-
-            var lines = File.ReadLines(procPath);
-            var match = Regex.Match(lines.First(), @"\d+\s+\((.*?)\)\s+\w+\s+(\d+)\s");
-
-            if (match.Success)
+            if (File.Exists(procPath))
             {
-                var ppid = int.Parse(match.Groups[2].Value);
-                return ppid < 1 ? null : Process.GetProcessById(ppid);
+                var lines = File.ReadLines(procPath);
+                var match = Regex.Match(lines.First(), @"\d+\s+\((.*?)\)\s+\w+\s+(\d+)\s");
+
+                if (match.Success)
+                {
+                    var ppid = int.Parse(match.Groups[2].Value);
+                    return ppid < 1 ? null : Process.GetProcessById(ppid);
+                }
             }
         }
         catch
