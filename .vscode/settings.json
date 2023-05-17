@@ -8,5 +8,6 @@
     "cSpell.words": [
         "Xunit"
     ],
-    "azureFunctions.showTargetFrameworkWarning": false
+    "azureFunctions.showTargetFrameworkWarning": false,
+    "dotnet-test-explorer.testProjectPath": "**/*.sln"
 }
