@@ -20,17 +20,27 @@ internal static class ProcessExtensions
         return tcs.Task;
     }
 
+    public static void KillProcessTree(this Process process)
+    {
+        foreach (var childProcess in process.GetChildren())
+        {
+            childProcess.Kill();
+        }
+
+        process.Kill();
+    }
+
     // http://blogs.msdn.com/b/bclteam/archive/2006/06/20/640259.aspx
     // http://stackoverflow.com/questions/394816/how-to-get-parent-process-in-net-in-managed-way
     // https://github.com/projectkudu/kudu/blob/master/Kudu.Core/Infrastructure/ProcessExtensions.cs
-    public static IEnumerable<Process> GetChildren(this Process process, bool recursive = true)
+    private static IEnumerable<Process> GetChildren(this Process process, bool recursive = true)
     {
-        int pid = process.Id;
-        Dictionary<int, List<int>> tree = GetProcessTree();
+        var pid = process.Id;
+        var tree = GetProcessTree();
         return GetChildren(pid, tree, recursive).Select(SafeGetProcessById).Where(p => p != null).Select(p => p!);
     }
 
-    public static Process? GetParentProcess(this Process process)
+    private static Process? GetParentProcess(this Process process)
     {
         if (!process.TryGetProcessHandle(out IntPtr processHandle))
         {
@@ -40,7 +50,7 @@ internal static class ProcessExtensions
         var pbi = new ProcessNativeMethods.ProcessInformation();
         try
         {
-            int status =
+            var status =
                 ProcessNativeMethods.NtQueryInformationProcess(
                     processHandle,
                     0,
@@ -68,7 +78,7 @@ internal static class ProcessExtensions
         if (tree.TryGetValue(pid, out var children))
         {
             var result = new List<int>();
-            foreach (int id in children)
+            foreach (var id in children)
             {
                 if (recursive)
                 {

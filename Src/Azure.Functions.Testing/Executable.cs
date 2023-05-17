@@ -51,7 +51,7 @@ internal class Executable : IDisposable
             return exitCodeTask.Result;
         }
 
-        Process!.Kill();
+        Process!.KillProcessTree();
         throw new Exception("Process didn't exit within specified timeout");
     }
 
@@ -64,6 +64,7 @@ internal class Executable : IDisposable
 
         var exitCode = -1;
         var exitCodeTask = Process!.CreateWaitForExitTask();
+        Process.KillProcessTree();
 
         await Task.WhenAny(exitCodeTask, Task.Delay(timeout));
         var processCompleted = exitCodeTask.IsCompleted;
