@@ -60,7 +60,7 @@ public sealed class FunctionApplicationFactory : IDisposable
         return InternalCreateClient();
     }
 
-    public void CleanupRunningFunctions()
+    public void KillAllFuncProcesses()
     {
         foreach (var process in Process.GetProcessesByName("func"))
         {
