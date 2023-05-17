@@ -6,17 +6,17 @@ namespace Dotnet.Function.Demo.XunitCollectionFixtureTests;
 [Collection(nameof(HttpClientFixture))]
 public abstract class TestBase : IDisposable
 {
-    private readonly TestOutputConsoleAdapter _outputConsoleAdapter;
+    protected readonly TestOutputConsoleAdapter ConsoleLogger;
     protected readonly HttpClientFixture ClientFixture;
 
     protected TestBase(ITestOutputHelper output, HttpClientFixture clientFixture)
     {
         ClientFixture = clientFixture;
-        _outputConsoleAdapter = new TestOutputConsoleAdapter(output);
+        ConsoleLogger = new TestOutputConsoleAdapter(output);
     }
 
     public void Dispose()
     {
-        _outputConsoleAdapter.Dispose();
+        ConsoleLogger.Dispose();
     }
 }

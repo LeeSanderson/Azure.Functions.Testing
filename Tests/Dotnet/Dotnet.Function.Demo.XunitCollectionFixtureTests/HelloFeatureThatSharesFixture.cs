@@ -17,10 +17,12 @@ public class HelloFeatureThatSharesFixture : TestBase
     [Fact]
     public async Task HelloIsOkay()
     {
+        ConsoleLogger.WriteLine($"Starting test {nameof(HelloFeatureThatSharesFixture)}.{nameof(HelloIsOkay)}");
         using var client = await ClientFixture.CreateClient();
 
         var response = await client.GetAsync(GetHelloUri);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
+        ConsoleLogger.WriteLine($"Completed test {nameof(HelloFeatureThatSharesFixture)}.{nameof(HelloIsOkay)}");
     }
 }

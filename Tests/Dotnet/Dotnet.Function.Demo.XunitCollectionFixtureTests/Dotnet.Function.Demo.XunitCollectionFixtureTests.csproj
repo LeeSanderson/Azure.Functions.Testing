@@ -26,5 +26,8 @@
     <ProjectReference Include="..\..\..\src\Azure.Functions.Testing\Azure.Functions.Testing.csproj" />
     <ProjectReference Include="..\..\Xunit.Shared\Xunit.Shared.csproj" />
   </ItemGroup>
-
+	
+  <ItemGroup>
+    <Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
 </Project>
