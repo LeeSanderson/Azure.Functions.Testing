@@ -232,8 +232,7 @@ public sealed class FunctionApplicationFactory : IDisposable
         var (_, exitCode) = await _funcExe.TryGetExitCode(ShutdownDelay);
         if (exitCode > 0)
         {
-            throw new FunctionApplicationFactoryException(
-                $"'func' failed to stopped prematurely with exit code {exitCode}. Check log for more details");
+            Console.WriteLine($"WARNING: 'func' failed to stop with exit code {exitCode}. Check log for more details");
         }
 
         _funcExe.Dispose();
