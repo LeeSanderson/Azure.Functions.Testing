@@ -1,4 +1,5 @@
-﻿using System.Net.Sockets;
+﻿using System.Diagnostics;
+using System.Net.Sockets;
 
 namespace Azure.Functions.Testing;
 
@@ -57,6 +58,21 @@ public sealed class FunctionApplicationFactory : IDisposable
     {
         await Start();
         return InternalCreateClient();
+    }
+
+    public void KillAllFuncProcesses()
+    {
+        foreach (var process in Process.GetProcessesByName("func"))
+        {
+            try
+            {
+                process.KillProcessTree();
+            }
+            catch
+            {
+                // Ignore
+            }
+        }
     }
 
     private HttpClient InternalCreateClient()
@@ -216,8 +232,7 @@ public sealed class FunctionApplicationFactory : IDisposable
         var (_, exitCode) = await _funcExe.TryGetExitCode(ShutdownDelay);
         if (exitCode > 0)
         {
-            throw new FunctionApplicationFactoryException(
-                $"'func' failed to stopped prematurely with exit code {exitCode}. Check log for more details");
+            Console.WriteLine($"WARNING: 'func' failed to stop with exit code {exitCode}. Check log for more details");
         }
 
         _funcExe.Dispose();

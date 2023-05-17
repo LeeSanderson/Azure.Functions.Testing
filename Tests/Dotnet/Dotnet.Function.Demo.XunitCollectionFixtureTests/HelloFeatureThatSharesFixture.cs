@@ -1,33 +1,28 @@
 using Dotnet.Function.Demo.XunitCollectionFixtureTests;
 using System.Net;
 using Xunit.Abstractions;
-using Xunit.Shared;
 using FluentAssertions;
 
 namespace Dotnet.Function.Demo.XUnitCollectionFixtureTests;
 
-
-[Collection(nameof(HttpClientFixture))]
-public class HelloFeatureThatSharesFixture
+public class HelloFeatureThatSharesFixture : TestBase
 {
     private const string GetHelloUri = "/api/Hello";
 
-    private readonly HttpClientFixture _clientFixture;
-
-    public HelloFeatureThatSharesFixture(ITestOutputHelper output, HttpClientFixture clientFixture)
+    public HelloFeatureThatSharesFixture(ITestOutputHelper output, HttpClientFixture clientFixture):
+        base(output, clientFixture)
     {
-        _clientFixture = clientFixture;
-        Console.SetOut(new TestOutputConsoleAdapter(output));
     }
 
     [Fact]
     public async Task HelloIsOkay()
     {
-        using var client = await _clientFixture.CreateClient();
+        ConsoleLogger.WriteLine($"Starting test {nameof(HelloFeatureThatSharesFixture)}.{nameof(HelloIsOkay)}");
+        using var client = await ClientFixture.CreateClient();
 
         var response = await client.GetAsync(GetHelloUri);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
+        ConsoleLogger.WriteLine($"Completed test {nameof(HelloFeatureThatSharesFixture)}.{nameof(HelloIsOkay)}");
     }
-
 }

@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 
 namespace Azure.Functions.Testing;
 
@@ -20,19 +21,34 @@ internal static class ProcessExtensions
         return tcs.Task;
     }
 
+    public static void KillProcessTree(this Process process)
+    {
+        foreach (var childProcess in process.GetChildren())
+        {
+            childProcess.Kill();
+        }
+
+        process.Kill();
+    }
+
     // http://blogs.msdn.com/b/bclteam/archive/2006/06/20/640259.aspx
     // http://stackoverflow.com/questions/394816/how-to-get-parent-process-in-net-in-managed-way
     // https://github.com/projectkudu/kudu/blob/master/Kudu.Core/Infrastructure/ProcessExtensions.cs
-    public static IEnumerable<Process> GetChildren(this Process process, bool recursive = true)
+    private static IEnumerable<Process> GetChildren(this Process process, bool recursive = true)
     {
-        int pid = process.Id;
-        Dictionary<int, List<int>> tree = GetProcessTree();
+        var pid = process.Id;
+        var tree = GetProcessTree();
         return GetChildren(pid, tree, recursive).Select(SafeGetProcessById).Where(p => p != null).Select(p => p!);
     }
 
-    public static Process? GetParentProcess(this Process process)
+    private static Process? GetParentProcess(this Process process)
     {
-        if (!process.TryGetProcessHandle(out IntPtr processHandle))
+        if (!OsDetector.IsOnWindows())
+        {
+            return process.GetParentProcessLinux();
+        }
+
+        if (!process.TryGetProcessHandle(out var processHandle))
         {
             return null;
         }
@@ -40,7 +56,7 @@ internal static class ProcessExtensions
         var pbi = new ProcessNativeMethods.ProcessInformation();
         try
         {
-            int status =
+            var status =
                 ProcessNativeMethods.NtQueryInformationProcess(
                     processHandle,
                     0,
@@ -61,6 +77,32 @@ internal static class ProcessExtensions
         }
     }
 
+    // http://stackoverflow.com/questions/2509406/c-mono-get-list-of-child-processes-on-windows-and-linux
+    private static Process? GetParentProcessLinux(this Process process)
+    {
+        try
+        {
+            var procPath = "/proc/" + process.Id + "/stat";
+            if (File.Exists(procPath))
+            {
+                var lines = File.ReadLines(procPath);
+                var match = Regex.Match(lines.First(), @"\d+\s+\((.*?)\)\s+\w+\s+(\d+)\s");
+
+                if (match.Success)
+                {
+                    var ppid = int.Parse(match.Groups[2].Value);
+                    return ppid < 1 ? null : Process.GetProcessById(ppid);
+                }
+            }
+        }
+        catch
+        {
+            return null;
+        }
+
+        return null;
+    }
+
     // recursively get children.
     // return depth-first (leaf child first).
     private static IEnumerable<int> GetChildren(int pid, Dictionary<int, List<int>> tree, bool recursive)
@@ -68,7 +110,7 @@ internal static class ProcessExtensions
         if (tree.TryGetValue(pid, out var children))
         {
             var result = new List<int>();
-            foreach (int id in children)
+            foreach (var id in children)
             {
                 if (recursive)
                 {
