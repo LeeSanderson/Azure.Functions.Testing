@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 
 namespace Azure.Functions.Testing;
 
@@ -42,6 +43,11 @@ internal static class ProcessExtensions
 
     private static Process? GetParentProcess(this Process process)
     {
+        if (!OsDetector.IsOnWindows())
+        {
+            return process.GetParentProcessLinux();
+        }
+
         if (!process.TryGetProcessHandle(out IntPtr processHandle))
         {
             return null;
@@ -69,6 +75,30 @@ internal static class ProcessExtensions
         {
             return null;
         }
+    }
+
+    // http://stackoverflow.com/questions/2509406/c-mono-get-list-of-child-processes-on-windows-and-linux
+    private static Process? GetParentProcessLinux(this Process process)
+    {
+        try
+        {
+            var procPath = "/proc/" + process.Id + "/stat";
+
+            var lines = File.ReadLines(procPath);
+            var match = Regex.Match(lines.First(), @"\d+\s+\((.*?)\)\s+\w+\s+(\d+)\s");
+
+            if (match.Success)
+            {
+                var ppid = int.Parse(match.Groups[2].Value);
+                return ppid < 1 ? null : Process.GetProcessById(ppid);
+            }
+        }
+        catch
+        {
+            return null;
+        }
+
+        return null;
     }
 
     // recursively get children.
