@@ -1,6 +1,5 @@
 ﻿using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
-using System;
 
 [assembly: FunctionsStartup(typeof(Dotnet.Function.Demo.Startup))]
 namespace Dotnet.Function.Demo;
