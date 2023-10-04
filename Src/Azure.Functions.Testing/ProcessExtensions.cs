@@ -147,17 +147,23 @@ internal static class ProcessExtensions
     {
         try
         {
-            // This may fail due to access denied.
-            // Handle the exception to reduce noises in trace errors.
             processHandle = process.Handle;
         }
         catch (Win32Exception ex)
         {
+            // process.Handle may fail due to access denied.
+            // Handle the exception to reduce noises in trace errors.
             if (ex.NativeErrorCode != 5)
             {
                 throw;
             }
 
+            processHandle = IntPtr.Zero;
+        }
+        catch (InvalidOperationException)
+        {
+            // process.Handle may fail if the process has already exited.
+            // Handle the exception to reduce noises in trace errors.
             processHandle = IntPtr.Zero;
         }
 
