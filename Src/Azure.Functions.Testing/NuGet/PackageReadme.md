@@ -98,11 +98,12 @@ task can be used to install dependencies.
 
 ## Version History
 
-| Version | Major Changes |  
-| --- | --- | 
-| 0.1.5 | Optimizations and performance fixes  |  
-| 0.1.4 | Fixed bug when using health check and function is not receiving requests  |  
-| 0.1.3 | Added support for health check on startup  |  
-| 0.1.2 | Added support for running in CI pipelines as well as locally |  
-| 0.1.1 | Expose Start and Stop methods to allow initialization |  
-| 0.1.0 | Initial version |  
+| Version | Major Changes                                                                          |  
+|---------|----------------------------------------------------------------------------------------| 
+| 0.1.6   | Fixed intermittent bug where Stop method would error as the process had already exited |  
+| 0.1.5   | Optimizations and performance fixes                                                    |  
+| 0.1.4   | Fixed bug when using health check and function is not receiving requests               |  
+| 0.1.3   | Added support for health check on startup                                              |  
+| 0.1.2   | Added support for running in CI pipelines as well as locally                           |  
+| 0.1.1   | Expose Start and Stop methods to allow initialization                                  |  
+| 0.1.0   | Initial version                                                                        |  
